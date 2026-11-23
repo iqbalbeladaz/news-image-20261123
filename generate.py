@@ -1,113 +1,151 @@
 #!/usr/bin/env python3
-"""Draw the 23 November 2026 world-news summary image.
+"""Render the one-image summary of Monday 23 November 2026.
 
-One 1024x1024 PNG, built only from the day's verified headlines:
-the COP31 collapse in Antalya, Iran's strike on Bahrain and tankers
-ablaze in Hormuz, the Dymer drone strike near Kyiv, the Russian cargo
-ship burning off Finland, South Korea's education minister resigning
-over AI exam cheating, and the UN's lethal-weapons talks going on,
-plus Indonesia, Nepal/India, cricket, Lisbon and South Sudan in brief.
-Run: python3 generate.py  -> writes entry.png beside this file.
+The picture is drawn from scratch with Pillow: a newspaper-style
+masthead naming the day, six story panels (climate, Gulf conflict,
+Ukraine, the Baltic, Seoul, the UN) and an "also today" strip with
+five shorter items. Every headline below was checked against the
+morning wires and roundups of 23 November 2026 before drawing.
+
+Usage: python3 generate.py  (writes entry.png next to this file)
 """
+import os
+import textwrap
+
 from PIL import Image, ImageDraw, ImageFont
-import textwrap, os
 
-W = 1024
-BG = (247, 243, 232)
+CANVAS = 1024
+CREAM = (247, 243, 232)
 INK = (18, 18, 20)
-PAPER = (255, 255, 255)
-MUTED = (84, 84, 88)
+CARD = (255, 255, 255)
+GREY = (84, 84, 88)
+NAVY = (16, 24, 48)
+GOLD = (255, 209, 64)
+RED = (232, 64, 52)
+EDGE = (215, 208, 190)
 
-FD = "/usr/share/fonts/truetype/dejavu"
-def font(name, size):
-    return ImageFont.truetype(os.path.join(FD, name), size)
+FONT_DIR = "/usr/share/fonts/truetype/dejavu"
 
-BOLD = "DejaVuSans-Bold.ttf"
-REG = "DejaVuSans.ttf"
 
-img = Image.new("RGB", (W, W), BG)
-d = ImageDraw.Draw(img)
+def load_font(bold, size):
+    name = "DejaVuSans-Bold.ttf" if bold else "DejaVuSans.ttf"
+    return ImageFont.truetype(os.path.join(FONT_DIR, name), size)
 
-# ---- Masthead -------------------------------------------------------------
-d.rectangle([0, 0, W, 150], fill=(16, 24, 48))
-d.text((36, 18), "THE WORLD IN ONE DAY", font=font(BOLD, 52), fill=(255, 255, 255))
-d.rectangle([36, 86, 988, 90], fill=(232, 64, 52))
-d.text((36, 100), "MONDAY  23 NOVEMBER 2026", font=font(BOLD, 34), fill=(255, 209, 64))
-d.text((988, 100), "ONE IMAGE  •  THE DAY'S NEWS", font=font(BOLD, 20),
-       fill=(210, 218, 235), anchor="ra")
 
-# ---- Story panels ----------------------------------------------------------
-# (accent, kicker, headline, body)
-stories = [
-    ((22, 138, 90), "CLIMATE  •  ANTALYA, TURKIYE",
-     "COP31 TALKS COLLAPSE",
-     "Climate summit ends with NO DEAL. EU rejects final draft that left out fossil fuels."),
-    ((200, 52, 40), "CONFLICT  •  BAHRAIN / HORMUZ",
-     "IRAN STRIKES BAHRAIN",
-     "Projectiles hit a Sitra industrial site, 2 injured. Tankers set ablaze in the Strait."),
-    ((52, 92, 180), "WAR  •  DYMER, UKRAINE",
-     "DRONE HITS APARTMENTS",
-     "Russian drone hits a five-storey block near Kyiv. 2 killed, at least 14 people missing."),
-    ((128, 70, 170), "BALTIC SEA  •  OFF FINLAND",
-     "RUSSIAN SHIP ABLAZE",
-     "Cargo ship still burning off Finland after a drone attack in the Baltic Sea."),
-    ((176, 120, 20), "ASIA  •  SEOUL, SOUTH KOREA",
-     "MINISTER QUITS OVER AI CHEATING",
-     "Education minister resigns over AI cheating chaos in the college exam."),
-    ((10, 130, 140), "DIPLOMACY  •  UNITED NATIONS",
-     "TALKS ON KILLER ROBOTS GO ON",
-     "Nations agree to keep negotiating curbs on lethal autonomous weapons."),
-]
-
-margin, gap = 36, 20
-panel_w = (W - 2 * margin - gap) // 2
-panel_h = 178
-top = 172
-for i, (accent, kicker, head, body) in enumerate(stories):
-    x = margin + (i % 2) * (panel_w + gap)
-    y = top + (i // 2) * (panel_h + gap)
-    d.rounded_rectangle([x, y, x + panel_w, y + panel_h], radius=14, fill=PAPER,
-                        outline=(215, 208, 190), width=2)
-    d.rectangle([x, y, x + panel_w, y + 10], fill=accent)
-    d.text((x + 20, y + 24), kicker, font=font(BOLD, 17), fill=accent)
-    # headline may need two lines for the longest ones
-    hy = y + 52
-    for line in textwrap.wrap(head, width=24):
-        size = 27
-        while size > 18 and d.textlength(line, font=font(BOLD, size)) > panel_w - 40:
-            size -= 1
-        d.text((x + 20, hy), line, font=font(BOLD, size), fill=INK)
-        hy += 32
-    by = hy + 4
-    for line in textwrap.wrap(body, width=39):
-        d.text((x + 20, by), line, font=font(REG, 19), fill=MUTED)
-        by += 24
-
-# ---- Also today strip -------------------------------------------------------
-strip_y = top + 3 * (panel_h + gap) + 2
-d.rounded_rectangle([margin, strip_y, W - margin, 962], radius=14,
-                    fill=(16, 24, 48))
-d.text((margin + 20, strip_y + 14), "ALSO TODAY", font=font(BOLD, 22),
-       fill=(255, 209, 64))
-briefs = [
-    "INDONESIA: 24 bodies recovered after a factory fire; search goes on for the missing.",
-    "INDIA: Nepal PM Balendra Shah holds talks with PM Modi on a state visit to New Delhi.",
-    "CRICKET: India post a record 720/9 declared in the Wellington Test vs New Zealand.",
-    "PORTUGAL: Thousands march in Lisbon as living costs fuel anger.",
-    "SOUTH SUDAN: 24 civilians killed in fresh violence, officials say.",
-]
-by = strip_y + 50
-for b in briefs:
-    size = 17
-    text = "•  " + b
-    while size > 13 and d.textlength(text, font=font(BOLD, size)) > W - 2 * margin - 40:
+def fit_text(draw, text, bold, size, limit):
+    """Largest size at or below `size` that fits `limit` pixels wide."""
+    while size > 16:
+        font = load_font(bold, size)
+        if draw.textlength(text, font=font) <= limit:
+            return font
         size -= 1
-    d.text((margin + 20, by), text, font=font(BOLD, size), fill=(240, 243, 250))
-    by += 27
+    return load_font(bold, size)
 
-d.text((W // 2, 982), "The day's biggest stories, across every region - in a single picture.",
-       font=font(REG, 18), fill=MUTED, anchor="ma")
 
-out = os.path.join(os.path.dirname(os.path.abspath(__file__)), "entry.png")
-img.save(out, optimize=True)
-print("wrote", out, os.path.getsize(out), "bytes")
+def story_panel(draw, box, accent, kicker, headline, body):
+    """One white card: coloured top bar, kicker, headline, body copy."""
+    x0, y0, x1, y1 = box
+    draw.rounded_rectangle(box, radius=14, fill=CARD, outline=EDGE, width=2)
+    draw.rectangle([x0, y0, x1, y0 + 10], fill=accent)
+    draw.text((x0 + 20, y0 + 24), kicker, font=load_font(True, 17), fill=accent)
+    cursor = y0 + 52
+    for line in textwrap.wrap(headline, width=24):
+        font = fit_text(draw, line, True, 27, (x1 - x0) - 40)
+        draw.text((x0 + 20, cursor), line, font=font, fill=INK)
+        cursor += 32
+    cursor += 4
+    lines = textwrap.wrap(body, width=39)
+    size = 19
+    # Shrink the body copy if it would run past the card's bottom edge.
+    while size > 14 and cursor + len(lines) * (size + 5) > y1 - 10:
+        size -= 1
+    for line in lines:
+        draw.text((x0 + 20, cursor), line, font=load_font(False, size), fill=GREY)
+        cursor += size + 5
+
+
+def brief_strip(draw, box, items):
+    """Dark strip listing the shorter stories of the day."""
+    x0, y0, x1, y1 = box
+    draw.rounded_rectangle(box, radius=14, fill=NAVY)
+    draw.text((x0 + 20, y0 + 14), "ALSO TODAY", font=load_font(True, 22), fill=GOLD)
+    cursor = y0 + 50
+    for item in items:
+        text = "•  " + item
+        font = fit_text(draw, text, True, 17, (x1 - x0) - 40)
+        draw.text((x0 + 20, cursor), text, font=font, fill=(240, 243, 250))
+        cursor += 27
+
+
+def main():
+    img = Image.new("RGB", (CANVAS, CANVAS), CREAM)
+    draw = ImageDraw.Draw(img)
+
+    # Masthead: paper name, red rule, the date in gold.
+    draw.rectangle([0, 0, CANVAS, 150], fill=NAVY)
+    draw.text((36, 18), "THE WORLD IN ONE DAY",
+              font=load_font(True, 52), fill=(255, 255, 255))
+    draw.rectangle([36, 86, 988, 90], fill=RED)
+    draw.text((36, 100), "MONDAY  23 NOVEMBER 2026",
+              font=load_font(True, 34), fill=GOLD)
+    draw.text((988, 100), "ONE IMAGE  •  THE DAY'S NEWS",
+              font=load_font(True, 20), fill=(210, 218, 235), anchor="ra")
+
+    stories = [
+        dict(accent=(22, 138, 90), kicker="CLIMATE  •  ANTALYA, TURKIYE",
+             headline="COP31 TALKS COLLAPSE",
+             body="Climate summit ends with NO DEAL. EU rejects final draft "
+                  "that left out fossil fuels."),
+        dict(accent=(200, 52, 40), kicker="CONFLICT  •  BAHRAIN / HORMUZ",
+             headline="IRAN STRIKES BAHRAIN",
+             body="Projectiles hit a Sitra industrial site, 2 injured. "
+                  "Tankers set ablaze in the Strait."),
+        dict(accent=(52, 92, 180), kicker="WAR  •  DYMER, UKRAINE",
+             headline="DRONE HITS APARTMENTS",
+             body="Russian drone hits a five-storey block near Kyiv. "
+                  "2 killed, at least 14 people missing."),
+        dict(accent=(128, 70, 170), kicker="BALTIC SEA  •  OFF FINLAND",
+             headline="RUSSIAN SHIP ABLAZE",
+             body="Cargo ship still burning off Finland after a drone "
+                  "attack in the Baltic Sea."),
+        dict(accent=(176, 120, 20), kicker="ASIA  •  SEOUL, SOUTH KOREA",
+             headline="MINISTER QUITS OVER AI CHEATING",
+             body="Education minister resigns over AI cheating chaos "
+                  "in the college exam."),
+        dict(accent=(10, 130, 140), kicker="DIPLOMACY  •  UNITED NATIONS",
+             headline="TALKS ON KILLER ROBOTS GO ON",
+             body="Nations agree to keep negotiating curbs on lethal "
+                  "autonomous weapons."),
+    ]
+
+    margin, gap = 36, 20
+    width = (CANVAS - 2 * margin - gap) // 2
+    height = 178
+    top = 172
+    for i, story in enumerate(stories):
+        x = margin + (i % 2) * (width + gap)
+        y = top + (i // 2) * (height + gap)
+        story_panel(draw, (x, y, x + width, y + height), **story)
+
+    briefs = [
+        "INDONESIA: 24 bodies recovered after a factory fire; search goes on for the missing.",
+        "INDIA: Nepal PM Balendra Shah holds talks with PM Modi on a state visit to New Delhi.",
+        "CRICKET: India post a record 720/9 declared in the Wellington Test vs New Zealand.",
+        "PORTUGAL: Thousands march in Lisbon as living costs fuel anger.",
+        "SOUTH SUDAN: 24 civilians killed in fresh violence, officials say.",
+    ]
+    strip_top = top + 3 * (height + gap) + 2
+    brief_strip(draw, (margin, strip_top, CANVAS - margin, 962), briefs)
+
+    draw.text((CANVAS // 2, 982),
+              "The day's biggest stories, across every region - in a single picture.",
+              font=load_font(False, 18), fill=GREY, anchor="ma")
+
+    here = os.path.dirname(os.path.abspath(__file__))
+    out = os.path.join(here, "entry.png")
+    img.save(out, optimize=True)
+    print("wrote", out, os.path.getsize(out), "bytes")
+
+
+if __name__ == "__main__":
+    main()

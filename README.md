@@ -2,41 +2,43 @@
 [![rank](https://make.fun/badge/news-image-20261123/iqbalbeladaz/news-image-20261123/rank.svg)](https://make.fun/bounty/news-image-20261123/leaderboard?utm_source=github&utm_medium=readme&utm_campaign=news-image-20261123)
 [![reward](https://make.fun/badge/news-image-20261123/iqbalbeladaz/news-image-20261123/reward.svg)](https://make.fun/bounty/news-image-20261123?utm_source=github&utm_medium=readme&utm_campaign=news-image-20261123)
 
-# News Image — 23 November 2026
+# The World in One Day — Monday 23 November 2026
 
-Entry for the make.fun competition `news-image-20261123`:
-"Sum up 23 November's world news in one image" ($100 prize pool).
+A make.fun `news-image-20261123` entry ("Sum up 23 November's world
+news in one image", $100 prize pool): one 1024×1024 picture of the
+day's world news, drawn with Python + Pillow by `generate.py` and
+delivered by `main.ts` (Node 22, standard library only), which copies
+`entry.png` to `$MAKEFUN_OUTPUT_DIR/entry.png` (default `/output`).
 
-`main.ts` (Node 22, standard library only) copies `entry.png` to
-`$MAKEFUN_OUTPUT_DIR/entry.png` (default `/output/entry.png`).
-The image is 1024×1024 PNG, well under 1 MiB. `generate.py` (Python + Pillow)
-is the source that drew it; the submitted program only copies the finished image.
+## What the picture shows
 
-## Stories shown (all reported 23 November 2026)
+Six main stories, all first reported on Monday 23 November 2026:
 
-1. **Climate** — COP31 in Antalya, Türkiye ends with no deal after the EU
-   rejects a final draft that left out fossil fuels.
-2. **Bahrain / Hormuz** — Iranian projectiles hit an industrial site in
-   Sitra, Bahrain (2 injured); tankers set ablaze in the Strait of Hormuz.
-3. **Ukraine** — Russian drone hits a five-storey apartment block in
-   Dymer, near Kyiv: 2 killed, at least 14 people missing.
-4. **Baltic Sea** — Russian cargo ship still burning off Finland after a
-   drone attack.
-5. **South Korea** — Education minister Choi Kyo-jin resigns over the
-   AI-assisted cheating chaos in the college entrance exam.
-6. **United Nations** — Nations agree to keep negotiating limits on
-   lethal autonomous weapons systems.
+- **COP31 collapses (Antalya, Türkiye)** — the climate summit ends
+  with no deal after the EU rejects a final draft with no mention of
+  fossil fuels.
+- **Iran strikes Bahrain** — projectiles hit an industrial site in
+  Sitra (2 injured), and tankers are set ablaze in the Strait of
+  Hormuz.
+- **Drone hits apartments (Dymer, Ukraine)** — a Russian drone hits a
+  five-storey block near Kyiv: 2 killed, at least 14 people missing.
+- **Russian ship ablaze (Baltic Sea)** — a cargo ship is still burning
+  off Finland after a drone attack.
+- **Seoul** — South Korea's education minister resigns over the
+  AI-assisted cheating chaos in the college entrance exam.
+- **United Nations** — nations agree to keep negotiating curbs on
+  lethal autonomous weapons.
 
-Also today: 24 bodies recovered after a factory fire in Indonesia;
-Nepal PM Balendra Shah holds talks with PM Modi in New Delhi; India
-post a record 720/9 declared in the Wellington Test vs New Zealand;
+And in brief: 24 bodies recovered after a factory fire in Indonesia;
+Nepal's PM Balendra Shah talks with PM Modi in New Delhi; India post
+a record 720/9 declared in the Wellington Test vs New Zealand;
 thousands march in Lisbon over living costs; 24 civilians killed in
 fresh violence in South Sudan.
 
-Sources consulted 23 Nov 2026 (WIB): AFP wires, Reuters, BBC, and
-23 November news roundups (Jagran Josh, Observer Voice, One Turn,
-Pollar, Euronews) — the stories above are the ones corroborated
-across multiple of those sources.
+Headlines were checked against the AFP wires, Reuters, the BBC and
+the 23 November news roundups (Jagran Josh, Observer Voice, One Turn,
+Pollar, Euronews) — only stories corroborated across several of them
+made the picture.
 
 ## License
 
